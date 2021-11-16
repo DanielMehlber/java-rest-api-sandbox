@@ -17,19 +17,19 @@ public class PersonLogic {
     @Resource
     private static UserTransaction transaction;
 
-    public static void addPerson(Person person)  throws Exception{
+    public static void addPerson(final Person person)  throws Exception{
         transaction.begin();
         persistenceMgr.persist(person);
         transaction.commit();
     }
 
-    public static void updatePerson(Person person) throws NoSuchPersonException {
+    public static void updatePerson(final Person person) throws NoSuchPersonException {
         Person _p = persistenceMgr.find(Person.class, person.getId());
         if (_p == null) throw new NoSuchPersonException(person);
         persistenceMgr.persist(person);
     }
 
-    public static void deletePerson(int id) throws NoSuchPersonException {
+    public static void deletePerson(final int id) throws NoSuchPersonException {
         Person _p = persistenceMgr.find(Person.class, id);
         if (_p == null) throw new NoSuchPersonException(id);
         persistenceMgr.remove(_p);

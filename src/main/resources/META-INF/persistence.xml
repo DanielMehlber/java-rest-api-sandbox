@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+ http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+             version="1.0">
+
+    <persistence-unit name="person" transaction-type="JTA">
+        <description>Persistence unit of sandbox</description>
+
+        <!-- this one uses OpenJPA. ALternatives are Hibernate or EclipseLink -->
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+
+        <!-- this is the name of the datasource, defined in the containers context  -->
+        <jta-data-source>java:/home-db</jta-data-source>
+
+        <!-- class with annotations to be processed -->
+        <class>com.danielmehlber.sandbox.entities.Person</class>
+    </persistence-unit>
+
+</persistence>

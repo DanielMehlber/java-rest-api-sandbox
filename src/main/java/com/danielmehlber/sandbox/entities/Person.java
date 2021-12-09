@@ -1,5 +1,7 @@
 package com.danielmehlber.sandbox.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -8,6 +10,7 @@ import java.util.Objects;
 public class Person {
 
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @JsonIgnore
     private int id;
 
     @Column(nullable = false)
@@ -21,6 +24,10 @@ public class Person {
 
     @Column
     private String phrase;
+
+    public Person() {
+
+    }
 
     public Person(int id, String firstname, String lastname, int age, String phrase) {
         this.id = id;

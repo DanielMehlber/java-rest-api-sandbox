@@ -1,51 +1,29 @@
 package com.danielmehlber.sandbox.db;
 
-import com.danielmehlber.sandbox.db.sql.JPADataBaseManager;
-import com.danielmehlber.sandbox.db.sql.JPAEntityFetcher;
-import com.danielmehlber.sandbox.db.sql.JPAEntityUpdater;
+import com.danielmehlber.sandbox.db.sql.JPADataBase;
+import com.danielmehlber.sandbox.exceptions.DataBaseException;
+import com.danielmehlber.sandbox.exceptions.InternalErrorException;
 
-/**
- * Enables centralized access to interface implementations necessary for database transactions.
- *
- * This enables an easy interchangeability of databases.
- * Thought behind this: currently using JPA (=SQL), might use REDIS later...
- */
 public class DataBaseAccess {
 
-    private static EntityUpdater updater;
-    private static EntityFetcher fetcher;
-    private static DataBaseManager manager;
+    private static DataBaseConnection connection;
 
     static {
-        /*
-         * define database implementation here
-         */
-        updater = new JPAEntityUpdater();
-        fetcher = new JPAEntityFetcher();
-        manager = new JPADataBaseManager();
+        connection = new JPADataBase();
     }
 
-    public static EntityUpdater getUpdater() {
-        return updater;
+    public static DataBaseConnection getConnection() {
+        return connection;
     }
 
-    public static void setUpdater(EntityUpdater updater) {
-        DataBaseAccess.updater = updater;
+    public static void init() throws InternalErrorException, DataBaseException {
+        getConnection().connect();
     }
 
-    public static EntityFetcher getFetcher() {
-        return fetcher;
-    }
-
-    public static void setFetcher(EntityFetcher fetcher) {
-        DataBaseAccess.fetcher = fetcher;
-    }
-
-    public static void setManager(DataBaseManager manager) {
-        DataBaseAccess.manager = manager;
-    }
-
-    public static DataBaseManager getManager() {
-        return manager;
+    public static void cleanUp() {
+        // cannot handle any fails (because end of lifecycle)
+        try {
+            getConnection().disconnect();
+        } catch (Exception ignored) {}
     }
 }

@@ -8,14 +8,34 @@
     <persistence-unit name="person" transaction-type="JTA">
         <description>Persistence unit of sandbox</description>
 
-        <!-- this one uses OpenJPA. ALternatives are Hibernate or EclipseLink -->
-        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-
         <!-- this is the name of the datasource, defined in the containers context  -->
         <jta-data-source>java:/home-db</jta-data-source>
 
         <!-- class with annotations to be processed -->
         <class>com.danielmehlber.sandbox.entities.Person</class>
+
+        <!-- this one uses OpenJPA. ALternatives are Hibernate or EclipseLink -->
+        <!-- this line is not needed, but can be set -->
+        <!--<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>-->
+        <properties>
+            <!-- in case you are using Wildfly, this enabled statistics -->
+            <property name="hibernate.generate_statistics" value="true"/>
+
+            <!-- other values like url, username, password are defined by DataSource in container -->
+        </properties>
+    </persistence-unit>
+
+    <!-- test persistence unit -->
+    <persistence-unit name="test" transaction-type="RESOURCE_LOCAL">
+        <!--                                        ^^^^^^^^^^^^^^ otherwise provider will complain-->
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+
+        <properties>
+            <property name="javax.persistence.jdbc.user" value="tester"/>
+            <property name="javax.persistence.jdbc.password" value="Password123!?"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+        </properties>
     </persistence-unit>
 
 </persistence>

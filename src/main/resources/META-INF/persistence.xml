@@ -28,7 +28,7 @@
     <!-- test persistence unit -->
     <persistence-unit name="test" transaction-type="RESOURCE_LOCAL">
         <!--                                        ^^^^^^^^^^^^^^ otherwise provider will complain-->
-        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <!--<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>-->
 
         <properties>
             <property name="javax.persistence.jdbc.user" value="tester"/>

@@ -3,11 +3,34 @@ package com.danielmehlber.sandbox.test.rest_api;
 import com.danielmehlber.sandbox.db.DataBaseAccess;
 import com.danielmehlber.sandbox.exceptions.DataBaseException;
 import com.danielmehlber.sandbox.exceptions.InternalErrorException;
+import com.danielmehlber.sandbox.rest_api.PersonAPI;
+import com.danielmehlber.sandbox.rest_api.RestApplication;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jdk.net.SocketFlow;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.test.JerseyTest;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class AddPersonTest {
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import static org.junit.Assert.assertEquals;
+
+public class AddPersonTest extends JerseyTest {
+
+    /**
+     * Required by Jersey Test Framework
+     * @return Application Configuration
+     */
+    @Override
+    protected Application configure() {
+        // mount PersonAPI
+        return new ResourceConfig(RestApplication.class, PersonAPI.class);
+    }
 
     @Before
     public void prepare() throws InternalErrorException, DataBaseException {
@@ -22,8 +45,10 @@ public class AddPersonTest {
     }
 
     @Test
-    public void testAdd() {
+    public void testAdd() throws JsonProcessingException {
+        Response response = target("/person/add").request().post(Entity.entity("", MediaType.TEXT_PLAIN));
 
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
 }

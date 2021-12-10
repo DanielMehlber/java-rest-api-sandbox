@@ -11,7 +11,7 @@ public class Person {
 
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
     @JsonIgnore
-    private int id;
+    private Integer id;
 
     @Column(nullable = false)
     private String firstname;
@@ -30,14 +30,18 @@ public class Person {
     }
 
     public Person(int id, String firstname, String lastname, int age, String phrase) {
+        this(firstname, lastname, age, phrase);
         this.id = id;
+    }
+
+    public Person(String firstname, String lastname, int age, String phrase) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.age = age;
         this.phrase = phrase;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -83,6 +87,20 @@ public class Person {
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
         return id == person.id && age == person.age && firstname.equals(person.firstname) && lastname.equals(person.lastname) && Objects.equals(phrase, person.phrase);
+    }
+
+    /**
+     * Does compare two objects of class person, but without comparing their ID
+     * @param other other person
+     * @return true if content of objects (without ID) are equal
+     */
+    public boolean equalsInContent(final Person other) {
+        if(this == other) return true;
+        if(other == null) return false;
+        return other.age == age
+                && other.firstname.equals(firstname)
+                && other.lastname.equals(lastname)
+                && other.phrase.equals(phrase);
     }
 
     @Override

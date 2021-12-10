@@ -9,17 +9,12 @@ import com.danielmehlber.sandbox.exceptions.NoSuchPersonException;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 public class JPADataBase implements DataBaseConnection {
 
@@ -51,6 +46,44 @@ public class JPADataBase implements DataBaseConnection {
             entityManager.close();
     }
 
+    private void createSchemaInCurrentDataBase() throws InternalErrorException {
+        // setup.sql contains database model
+        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/setup.sql")));
+        String setupQuery = "";
+
+        // read contents of setup.sql
+        try {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                setupQuery += line + "\n";
+            }
+        } catch (IOException e) {
+            throw new InternalErrorException("cannot read setup.sql", e);
+        }
+
+        entityManager.getTransaction().begin();
+        entityManager.createNativeQuery(setupQuery).executeUpdate();
+        entityManager.getTransaction().commit();
+    }
+
+    private void createTestDatabase() {
+        /*
+         * native queries need manual transaction management
+         */
+        entityManager.getTransaction().begin();
+        entityManager.createNativeQuery("CREATE DATABASE test").executeUpdate();
+        entityManager.getTransaction().commit();
+    }
+
+    private void dropTestDataBaseIfExists() {
+        /*
+         * native queries need manual transaction management
+         */
+        entityManager.getTransaction().begin();
+        entityManager.createNativeQuery("DROP DATABASE IF EXISTS test").executeUpdate();
+        entityManager.getTransaction().commit();
+    }
+
     @Override
     public void openTestConnection() throws DataBaseException, InternalErrorException {
         Map<String, String> properties = new HashMap<String, String>();
@@ -73,42 +106,27 @@ public class JPADataBase implements DataBaseConnection {
 
         // 2: Connect without database in order to delete and recreate 'test' database
         Map<String, String> properties = new HashMap<String, String>();
-
         properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306");
         entityManager = Persistence.createEntityManagerFactory("test", properties).createEntityManager();
 
-        /*
-         * native queries need manual transaction management
-         */
-        entityManager.getTransaction().begin();
-        entityManager.createNativeQuery("DROP DATABASE IF EXISTS test").executeUpdate();
-        entityManager.createNativeQuery("CREATE DATABASE test").executeUpdate();
-        entityManager.getTransaction().commit();
-
+        // 3: drop database if it exists (relevant at initial start) and create new one
+        dropTestDataBaseIfExists();
+        createTestDatabase();
         entityManager.close();
 
-        // 3: Connect to database 'test' and create schema
+        // 4: Connect to database 'test' and create schema
         properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306/test");
-
         entityManager = Persistence.createEntityManagerFactory("test", properties).createEntityManager();
 
-        // setup.sql contains database model
-        BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/setup.sql")));
-        String setupQuery = "";
+        // load setup.sql and create schema in current database (which is the newly created 'test' database)
+        createSchemaInCurrentDataBase();
+    }
 
-        // read contents of setup.sql
-        try {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                setupQuery += line + "\n";
-            }
-        } catch (IOException e) {
-            throw new InternalErrorException("cannot read setup.sql", e);
-        }
-
-        entityManager.getTransaction().begin();
-        entityManager.createNativeQuery(setupQuery).executeUpdate();
-        entityManager.getTransaction().commit();
+    @Override
+    public void cleanupAfterTest() throws DataBaseException, InternalErrorException {
+        dropTestDataBaseIfExists();
+        if(entityManager.isOpen())
+            entityManager.close();
     }
 
     @Override

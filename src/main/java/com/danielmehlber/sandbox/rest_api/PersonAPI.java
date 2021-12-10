@@ -39,7 +39,7 @@ public class PersonAPI {
         return Response.status(Response.Status.OK).entity(personJSON).build();
     }
 
-    @GET
+    @POST
     @Path("/add")
     @Consumes(MediaType.TEXT_PLAIN)
     public Response addPerson(final String json) {
@@ -47,12 +47,19 @@ public class PersonAPI {
         try {
             Person person = new ObjectMapper().readValue(json, Person.class);
             DataBaseAccess.getConnection().insertPerson(person);
-        } catch (JsonProcessingException | InternalErrorException | DataBaseException e) {
+        } catch (InternalErrorException | DataBaseException e) {
             // ISSUE: Server-side
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        } catch (JsonProcessingException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
         }
 
         return Response.status(Response.Status.OK).entity("person added to DB").build();
+    }
+
+    @GET
+    public Response test() {
+        return Response.status(200).build();
     }
 
 }

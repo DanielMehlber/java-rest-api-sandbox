@@ -1,6 +1,8 @@
 package com.danielmehlber.sandbox.entities;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -10,8 +12,7 @@ import java.util.Objects;
 public class Person {
 
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @JsonIgnore
-    private Integer id;
+    private int id;
 
     @Column(nullable = false)
     private String firstname;
@@ -29,7 +30,12 @@ public class Person {
 
     }
 
-    public Person(int id, String firstname, String lastname, int age, String phrase) {
+    @JsonCreator
+    public Person(@JsonProperty("id") int id,
+                  @JsonProperty(value="firstname", required=true) String firstname,
+                  @JsonProperty(value="lastname", required=true) String lastname,
+                  @JsonProperty(value="age", required=true) int age,
+                  @JsonProperty(value="phrase", required=true) String phrase) {
         this(firstname, lastname, age, phrase);
         this.id = id;
     }
@@ -41,7 +47,7 @@ public class Person {
         this.phrase = phrase;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -77,6 +83,7 @@ public class Person {
         this.phrase = phrase;
     }
 
+    @JsonIgnore
     public boolean isAlive() {
         return age > 0;
     }

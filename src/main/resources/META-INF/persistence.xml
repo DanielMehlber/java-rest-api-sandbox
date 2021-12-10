@@ -30,6 +30,8 @@
         <!--                                        ^^^^^^^^^^^^^^ otherwise provider will complain-->
         <!--<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>-->
 
+        <class>com.danielmehlber.sandbox.entities.Person</class>
+
         <properties>
             <property name="javax.persistence.jdbc.user" value="tester"/>
             <property name="javax.persistence.jdbc.password" value="Password123!?"/>

@@ -86,16 +86,26 @@ public class JPADataBase implements DataBaseConnection {
 
     @Override
     public void openTestConnection() throws DataBaseException, InternalErrorException {
-        Map<String, String> properties = new HashMap<String, String>();
+        try {
+            Map<String, String> properties = new HashMap<String, String>();
 
-        properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306");
-        // properties.put("javax.persistence.jdbc.user", "tester");
-        // properties.put("javax.persistence.jdbc.password", "");
-        // properties.put("javax.persistence.jdbc.driver", "com.mysql.jdbc.Driver");
+            properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306");
+            // properties.put("javax.persistence.jdbc.user", "tester");
+            // properties.put("javax.persistence.jdbc.password", "");
+            // properties.put("javax.persistence.jdbc.driver", "com.mysql.jdbc.Driver");
 
-        entityManager = Persistence.createEntityManagerFactory("test", properties).createEntityManager();
+            entityManager = Persistence.createEntityManagerFactory("test", properties).createEntityManager();
 
-        if(!entityManager.isOpen()) throw new DataBaseException("Connection cannot be established");
+            if (!entityManager.isOpen()) throw new DataBaseException("Connection cannot be established");
+        } catch (RuntimeException e) {
+            throw new InternalErrorException("Cannot open test connection", e);
+        }
+    }
+
+    @Override
+    public void closeTestConnection() throws DataBaseException, InternalErrorException {
+        if(entityManager != null && entityManager.isOpen())
+            entityManager.close();
     }
 
     @Override
@@ -125,8 +135,7 @@ public class JPADataBase implements DataBaseConnection {
     @Override
     public void cleanupAfterTest() throws DataBaseException, InternalErrorException {
         dropTestDataBaseIfExists();
-        if(entityManager.isOpen())
-            entityManager.close();
+        closeTestConnection();
     }
 
     @Override
@@ -147,7 +156,11 @@ public class JPADataBase implements DataBaseConnection {
     @Override
     public void insertPerson(Person person) throws DataBaseException, InternalErrorException {
         //throw InternalErrorException.NOT_YET_IMPLEMENTED;
-        entityManager.persist(person);
+        try {
+            entityManager.persist(person);
+        } catch (RuntimeException e) {
+            throw new DataBaseException("Cannot persist person", e);
+        }
     }
 
     @Override

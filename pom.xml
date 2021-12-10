@@ -36,14 +36,6 @@
         </dependency>
 
 
-        <!-- https://mvnrepository.com/artifact/org.apache.openjpa/openjpa-persistence-jdbc -->
-        <dependency>
-            <groupId>org.apache.openjpa</groupId>
-            <artifactId>openjpa-persistence-jdbc</artifactId>
-            <version>3.1.1</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
         <!-- Some containers want this jar deployed in their context in order to work (e.g. Wildfly) -->
         <dependency>
@@ -85,10 +77,17 @@
 
         <!-- This is a test dependency, because in production the server provides its own JPA provider -->
         <!-- https://mvnrepository.com/artifact/org.apache.openjpa/openjpa-persistence -->
-        <dependency>
+        <!--dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa-persistence</artifactId>
             <version>3.2.0</version>
+            <scope>provided</scope>
+        </dependency-->
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.6.2.Final</version>
             <scope>provided</scope>
         </dependency>
 

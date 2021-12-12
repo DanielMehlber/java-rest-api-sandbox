@@ -27,14 +27,14 @@ public class PersonAPI {
         String personJSON;
         Person person;
         try {
-            person = DataBaseAccess.getConnection().fetchById(id);
+            person = PersonLogic.getPersonById(id);
             personJSON = new ObjectMapper().writeValueAsString(person);
         } catch (InternalErrorException | DataBaseException | JsonProcessingException e) {
             // ISSUE: Server-fault
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
         } catch (NoSuchPersonException e) {
             // ISSUE: Client-fault. invalid id
-            return Response.status(Response.Status.NO_CONTENT).entity("No such person").build();
+            return Response.status(Response.Status.NOT_FOUND).entity("No such person").build();
         }
 
         return Response.status(Response.Status.OK).entity(personJSON).build();
@@ -45,9 +45,11 @@ public class PersonAPI {
     @Consumes(MediaType.TEXT_PLAIN)
     public Response addPerson(final String json) {
 
+        int id = 0;
+
         try {
             Person person = new ObjectMapper().readValue(json, Person.class);
-            PersonLogic.addPerson(person);
+            id = PersonLogic.addPerson(person);
         } catch (InternalErrorException | DataBaseException | RuntimeException e) {
             // ISSUE: Server-side
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -56,7 +58,7 @@ public class PersonAPI {
             return Response.status(Response.Status.NOT_ACCEPTABLE).build();
         }
 
-        return Response.status(Response.Status.OK).entity("person added to DB").build();
+        return Response.status(Response.Status.OK).entity(String.valueOf(id)).build();
     }
 
 }

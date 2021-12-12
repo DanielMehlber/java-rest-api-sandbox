@@ -51,15 +51,18 @@ public class AddPersonTest extends JerseyTest {
     @Test
     public void testAdd() throws JsonProcessingException, InternalErrorException, DataBaseException {
 
+        // arrange
         Person toAdd = new Person("Daniel", "Mehlber", 19, "I love programming");
+
+        // act
         Response response = target("/person/add")
                 .request().post(Entity.entity(new ObjectMapper().writeValueAsString(toAdd), MediaType.TEXT_PLAIN));
 
-        // check status
+        // assert
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // check values
-        int id = Integer.valueOf((String) response.readEntity(String.class));
+        int id = Integer.parseInt(response.readEntity(String.class));
         Person added;
         try {
             added = PersonLogic.getPersonById(id);
@@ -70,15 +73,23 @@ public class AddPersonTest extends JerseyTest {
 
         assertTrue("both objects must be equal in content", added.equalsInContent(toAdd));
 
-        // CASE: test for invalid JSON files (syntax and semantic)
+    }
+
+    @Test
+    public void testInvalid() {
+        // arrange
         String[] invalidJson = {
                 "", // empty is not allowed
                 "{}", // semantic: cannot create person from that
                 "{asefkljhaslkdjh}" // syntax errors
                 // TODO: more invalid JSONs
         };
+
         for(String invalid : invalidJson) {
-            response = target("/person/add").request().post(Entity.entity(invalid, MediaType.TEXT_PLAIN));
+            // act
+            Response response = target("/person/add").request().post(Entity.entity(invalid, MediaType.TEXT_PLAIN));
+
+            // assert
             assertEquals(Response.Status.NOT_ACCEPTABLE.getStatusCode(), response.getStatus());
         }
     }

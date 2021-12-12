@@ -45,10 +45,14 @@ public class GetPersonTest extends JerseyTest {
 
     @Test
     public void testGet() throws InternalErrorException, DataBaseException, JsonProcessingException {
+        // arrange
         Person person = new Person("Daniel", "Mehlber", 19, "I love programming");
         int id = PersonLogic.addPerson(person);
 
-        Response response = target("/person/id/"+String.valueOf(id)).request().get();
+        // act
+        Response response = target("/person/id/"+ id).request().get();
+
+        // assert
         Assert.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         String json = response.readEntity(String.class);
@@ -59,11 +63,14 @@ public class GetPersonTest extends JerseyTest {
 
     @Test
     public void testNonExistent() throws InternalErrorException, DataBaseException {
-
+        // arrange
         Person person = new Person("Daniel", "Mehlber", 19, "I love programming");
         int id = PersonLogic.addPerson(person);
 
-        Response response = target("/person/id/"+String.valueOf(id * 2)).request().get();
+        // act
+        Response response = target("/person/id/"+ id * 2).request().get();
+
+        // assert
         Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }

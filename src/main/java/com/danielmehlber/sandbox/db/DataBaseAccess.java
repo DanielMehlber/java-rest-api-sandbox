@@ -6,7 +6,7 @@ import com.danielmehlber.sandbox.exceptions.InternalErrorException;
 
 public class DataBaseAccess {
 
-    private static DataBaseConnection connection;
+    private static final DataBaseConnection connection;
 
     static {
         connection = new JPADataBase();

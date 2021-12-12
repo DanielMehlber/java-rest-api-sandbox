@@ -6,6 +6,7 @@ import com.danielmehlber.sandbox.entities.Person;
 import com.danielmehlber.sandbox.exceptions.DataBaseException;
 import com.danielmehlber.sandbox.exceptions.InternalErrorException;
 import com.danielmehlber.sandbox.exceptions.NoSuchPersonException;
+import com.danielmehlber.sandbox.logic.PersonLogic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +47,7 @@ public class PersonAPI {
 
         try {
             Person person = new ObjectMapper().readValue(json, Person.class);
-            DataBaseAccess.getConnection().insertPerson(person);
+            PersonLogic.addPerson(person);
         } catch (InternalErrorException | DataBaseException | RuntimeException e) {
             // ISSUE: Server-side
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();

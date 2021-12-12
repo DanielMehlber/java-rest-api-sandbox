@@ -24,5 +24,4 @@
             <!-- other values like url, username, password are defined by DataSource in container -->
         </properties>
     </persistence-unit>
-
 </persistence>

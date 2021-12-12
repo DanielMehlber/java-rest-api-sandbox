@@ -25,19 +25,4 @@
         </properties>
     </persistence-unit>
 
-    <!-- test persistence unit -->
-    <persistence-unit name="test" transaction-type="RESOURCE_LOCAL">
-        <!--                                        ^^^^^^^^^^^^^^ otherwise provider will complain-->
-        <!--<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>-->
-
-        <class>com.danielmehlber.sandbox.entities.Person</class>
-
-        <properties>
-            <property name="javax.persistence.jdbc.user" value="tester"/>
-            <property name="javax.persistence.jdbc.password" value="Password123!?"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306"/>
-            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-        </properties>
-    </persistence-unit>
-
 </persistence>

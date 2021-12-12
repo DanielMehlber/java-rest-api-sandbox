@@ -7,6 +7,7 @@ import com.danielmehlber.sandbox.exceptions.InternalErrorException;
 import com.danielmehlber.sandbox.exceptions.NoSuchPersonException;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -180,13 +181,24 @@ public class JPADataBase implements DataBaseConnection {
     }
 
     @Override
-    public void insertPerson(Person person) throws DataBaseException, InternalErrorException {
+    @Transactional
+    public int insertPerson(Person person) throws DataBaseException, InternalErrorException {
         //throw InternalErrorException.NOT_YET_IMPLEMENTED;
+        int id = 0;
         try {
+            /*
+             * in order to get the entities id, we have to use transactions (because entities must be flushed)
+             */
+            entityManager.getTransaction().begin();
             entityManager.persist(person);
+            entityManager.getTransaction().commit();
+            id = person.getId();
         } catch (RuntimeException e) {
+            entityManager.getTransaction().rollback();
             throw new InternalErrorException("Cannot persist person", e);
         }
+
+        return id;
     }
 
     @Override

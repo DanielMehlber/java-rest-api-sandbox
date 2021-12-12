@@ -1,17 +1,13 @@
 package com.danielmehlber.sandbox.rest_api;
 
-import com.danielmehlber.sandbox.db.DataBaseAccess;
-import com.danielmehlber.sandbox.db.DataBaseConnection;
 import com.danielmehlber.sandbox.entities.Person;
 import com.danielmehlber.sandbox.exceptions.DataBaseException;
 import com.danielmehlber.sandbox.exceptions.InternalErrorException;
 import com.danielmehlber.sandbox.exceptions.NoSuchPersonException;
 import com.danielmehlber.sandbox.logic.PersonLogic;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.print.attribute.standard.Media;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -45,7 +41,7 @@ public class PersonAPI {
     @Consumes(MediaType.TEXT_PLAIN)
     public Response addPerson(final String json) {
 
-        int id = 0;
+        int id;
 
         try {
             Person person = new ObjectMapper().readValue(json, Person.class);

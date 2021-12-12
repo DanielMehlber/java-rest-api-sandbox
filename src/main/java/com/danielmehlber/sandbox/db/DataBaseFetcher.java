@@ -13,12 +13,11 @@ public interface DataBaseFetcher {
      * fetches person with equal name
      * @param name of person
      * @return List of people of same name
-     * @throws DataBaseException errors while interacting with DB e.g. connection issues, etc
      * @throws InternalErrorException errors due to developer mistakes or internal accidents
      */
-    List<Person> fetchPersonByName(String name) throws DataBaseException, InternalErrorException;
+    List<Person> fetchPersonByName(String name) throws InternalErrorException;
 
 
-    Person fetchById(int id) throws DataBaseException, InternalErrorException, NoSuchPersonException;
+    Person fetchById(int id) throws DataBaseException, NoSuchPersonException;
 
 }

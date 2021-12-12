@@ -7,9 +7,9 @@ import com.danielmehlber.sandbox.exceptions.NoSuchPersonException;
 
 public interface DataBaseUpdater {
 
-    int insertPerson(Person person) throws DataBaseException, InternalErrorException;
-    void deletePerson(int id) throws DataBaseException, NoSuchPersonException, InternalErrorException;
-    void updatePerson(Person person) throws DataBaseException, NoSuchPersonException, InternalErrorException;
+    int insertPerson(Person person) throws InternalErrorException;
+    void deletePerson(int id) throws InternalErrorException;
+    void updatePerson(Person person) throws InternalErrorException;
 
 
 }

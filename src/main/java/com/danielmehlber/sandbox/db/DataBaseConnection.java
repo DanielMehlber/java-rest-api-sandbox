@@ -3,12 +3,10 @@ package com.danielmehlber.sandbox.db;
 import com.danielmehlber.sandbox.exceptions.DataBaseException;
 import com.danielmehlber.sandbox.exceptions.InternalErrorException;
 
-import javax.xml.crypto.Data;
-
 public interface DataBaseConnection extends DataBaseFetcher, DataBaseUpdater {
 
-    void connect() throws DataBaseException, InternalErrorException;
-    void disconnect() throws DataBaseException, InternalErrorException;
+    void connect() throws DataBaseException;
+    void disconnect() throws DataBaseException;
 
     default void openTestConnection() throws DataBaseException, InternalErrorException {
         connect();
@@ -18,7 +16,7 @@ public interface DataBaseConnection extends DataBaseFetcher, DataBaseUpdater {
         disconnect();
     }
 
-    default void prepareForTest() throws DataBaseException, InternalErrorException {}
+    default void prepareForTest() throws InternalErrorException {}
     default void cleanupAfterTest() throws DataBaseException, InternalErrorException {}
 
 }

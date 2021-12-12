@@ -42,7 +42,7 @@ public class JPADataBase implements DataBaseConnection {
     @Override
     public void disconnect() throws DataBaseException {
         try {
-            if (applicationManaged == true)
+            if (applicationManaged)
                 entityManager.close();
         } catch (RuntimeException e) {
             throw new DataBaseException("cannot disconnect", e);
@@ -53,20 +53,20 @@ public class JPADataBase implements DataBaseConnection {
         try {
             // setup.sql contains database model
             BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/setup.sql")));
-            String setupQuery = "";
+            StringBuilder setupQuery = new StringBuilder();
 
             // read contents of setup.sql
             try {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    setupQuery += line + "\n";
+                    setupQuery.append(line).append("\n");
                 }
             } catch (IOException e) {
                 throw new InternalErrorException("cannot read setup.sql", e);
             }
 
             entityManager.getTransaction().begin();
-            entityManager.createNativeQuery(setupQuery).executeUpdate();
+            entityManager.createNativeQuery(setupQuery.toString()).executeUpdate();
             entityManager.getTransaction().commit();
         } catch (RuntimeException e) {
             throw new InternalErrorException("cannot create schema on database", e);
@@ -94,7 +94,7 @@ public class JPADataBase implements DataBaseConnection {
     @Override
     public void openTestConnection() throws DataBaseException, InternalErrorException {
         try {
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
 
             properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306");
             // properties.put("javax.persistence.jdbc.user", "tester");
@@ -110,7 +110,7 @@ public class JPADataBase implements DataBaseConnection {
     }
 
     @Override
-    public void closeTestConnection() throws DataBaseException, InternalErrorException {
+    public void closeTestConnection() throws DataBaseException {
         try {
             if (entityManager != null && entityManager.isOpen())
                 entityManager.close();
@@ -127,7 +127,7 @@ public class JPADataBase implements DataBaseConnection {
                 entityManager.close();
 
             // 2: Connect without database in order to delete and recreate 'test' database
-            Map<String, String> properties = new HashMap<String, String>();
+            Map<String, String> properties = new HashMap<>();
             properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306");
             entityManager = Persistence.createEntityManagerFactory("test", properties).createEntityManager();
 
@@ -158,7 +158,7 @@ public class JPADataBase implements DataBaseConnection {
     }
 
     @Override
-    public List<Person> fetchPersonByName(String name) throws DataBaseException, InternalErrorException {
+    public List<Person> fetchPersonByName(String name) throws InternalErrorException {
         try {
             return entityManager.createQuery("SELECT * FROM Person p WHERE p.name=:name", Person.class)
                     .setParameter("name", name)
@@ -182,9 +182,9 @@ public class JPADataBase implements DataBaseConnection {
 
     @Override
     @Transactional
-    public int insertPerson(Person person) throws DataBaseException, InternalErrorException {
+    public int insertPerson(Person person) throws InternalErrorException {
         //throw InternalErrorException.NOT_YET_IMPLEMENTED;
-        int id = 0;
+        int id;
         try {
             /*
              * in order to get the entities id, we have to use transactions (because entities must be flushed)
@@ -202,12 +202,12 @@ public class JPADataBase implements DataBaseConnection {
     }
 
     @Override
-    public void deletePerson(int id) throws DataBaseException, InternalErrorException {
+    public void deletePerson(int id) throws InternalErrorException {
         throw InternalErrorException.NOT_YET_IMPLEMENTED;
     }
 
     @Override
-    public void updatePerson(Person person) throws DataBaseException, InternalErrorException {
+    public void updatePerson(Person person) throws InternalErrorException {
         throw InternalErrorException.NOT_YET_IMPLEMENTED;
     }
 }

@@ -17,6 +17,8 @@ import java.util.Map;
 
 public class JPADataBase implements DataBaseConnection {
 
+    private static final String TEST_DB_NAME = "PersonDB";
+
     @PersistenceContext(unitName = "person")
     EntityManager entityManager;
 
@@ -65,8 +67,15 @@ public class JPADataBase implements DataBaseConnection {
                 throw new InternalErrorException("cannot read setup.sql", e);
             }
 
+            /*
+             * JPA cannot process the whole script, so we need to execute it statement
+             * by statement, also known as batch processing. Statements are separated by ';'.
+             */
+            String[] scriptBatches = setupQuery.toString().trim().split(";");
             entityManager.getTransaction().begin();
-            entityManager.createNativeQuery(setupQuery.toString()).executeUpdate();
+            for(String batch : scriptBatches) {
+                entityManager.createNativeQuery(batch).executeUpdate();
+            }
             entityManager.getTransaction().commit();
         } catch (RuntimeException e) {
             throw new InternalErrorException("cannot create schema on database", e);
@@ -78,7 +87,7 @@ public class JPADataBase implements DataBaseConnection {
          * native queries need manual transaction management
          */
         entityManager.getTransaction().begin();
-        entityManager.createNativeQuery("CREATE DATABASE test").executeUpdate();
+        entityManager.createNativeQuery("CREATE DATABASE " + TEST_DB_NAME).executeUpdate();
         entityManager.getTransaction().commit();
     }
 
@@ -87,7 +96,7 @@ public class JPADataBase implements DataBaseConnection {
          * native queries need manual transaction management
          */
         entityManager.getTransaction().begin();
-        entityManager.createNativeQuery("DROP DATABASE IF EXISTS test").executeUpdate();
+        entityManager.createNativeQuery("DROP DATABASE IF EXISTS " + TEST_DB_NAME).executeUpdate();
         entityManager.getTransaction().commit();
     }
 
@@ -137,7 +146,7 @@ public class JPADataBase implements DataBaseConnection {
             entityManager.close();
 
             // 4: Connect to database 'test' and create schema
-            properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306/test");
+            properties.put("javax.persistence.jdbc.url", "jdbc:mysql://localhost:3306/"+TEST_DB_NAME);
             entityManager = Persistence.createEntityManagerFactory("test", properties).createEntityManager();
 
             // load setup.sql and create schema in current database (which is the newly created 'test' database)

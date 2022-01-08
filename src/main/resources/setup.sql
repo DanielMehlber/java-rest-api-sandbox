@@ -1,3 +1,5 @@
+USE PersonDB;
+
 CREATE TABLE people (
     id SERIAL PRIMARY KEY,
     firstname VARCHAR(20) NOT NULL,

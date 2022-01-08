@@ -5,11 +5,11 @@
  http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
              version="1.0">
 
-    <persistence-unit name="person" transaction-type="JTA">
+    <persistence-unit name="person" transaction-type="RESOURCE_LOCAL">
         <description>Persistence unit of sandbox</description>
 
         <!-- this is the name of the datasource, defined in the containers context  -->
-        <jta-data-source>java:/home-db</jta-data-source>
+        <!--jta-data-source>java:/home-db</jta-data-source-->
 
         <!-- class with annotations to be processed -->
         <class>com.danielmehlber.sandbox.entities.Person</class>
@@ -22,6 +22,12 @@
             <property name="hibernate.generate_statistics" value="true"/>
 
             <!-- other values like url, username, password are defined by DataSource in container -->
+
+            <property name="javax.persistence.jdbc.user" value="danielmehlber"/>
+            <property name="javax.persistence.jdbc.password" value="Password123!?"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://db:3306/PersonDB"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+
         </properties>
     </persistence-unit>
 </persistence>
